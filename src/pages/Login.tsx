@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { usePwaInstall } from "../contexts/PwaInstallContext";
 import { createSubmitGuard } from "../lib/security";
 
 const Login = () => {
   const { entrar, cadastrar } = useAuth();
+  const { canInstall, isInstalledOnThisDevice, promptInstall } = usePwaInstall();
   const navigate = useNavigate();
 
   const [modo, setModo] = useState<"login" | "cadastro">("login");
@@ -199,6 +201,21 @@ const Login = () => {
             </button>
           </div>
         </div>
+
+        {/* Instalar App neste dispositivo (caso não instalado) */}
+        {canInstall && !isInstalledOnThisDevice && (
+          <div className="mt-4 flex justify-center animate-fade-in">
+            <button
+              onClick={() => promptInstall()}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-violet-300 bg-violet-600/10 border border-violet-500/20 hover:bg-violet-600/20 hover:text-white transition-all shadow-sm"
+            >
+              <svg className="w-3.5 h-3.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Instalar Aplicativo neste Dispositivo
+            </button>
+          </div>
+        )}
 
         <p className="text-center text-xs text-muted-foreground mt-6">
           Estude de forma inteligente com IA 🧠

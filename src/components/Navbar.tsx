@@ -1,9 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { usePwaInstall } from "../contexts/PwaInstallContext";
 import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const { sair, usuario } = useAuth();
+  const { canInstall, isInstalledOnThisDevice, promptInstall } = usePwaInstall();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -33,6 +35,8 @@ const Navbar = () => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
   };
+
+  const showInstallButton = canInstall && !isInstalledOnThisDevice;
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "navbar-blur shadow-2xl" : "bg-transparent"}`}>
@@ -70,6 +74,20 @@ const Navbar = () => {
 
           {/* Right */}
           <div className="flex items-center gap-3">
+            {/* Botão de Instalar App (apenas se ainda não instalado neste dispositivo) */}
+            {showInstallButton && (
+              <button
+                onClick={() => promptInstall()}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-500/50 hover:text-white transition-all shadow-sm group"
+                title="Instalar aplicativo neste computador/dispositivo"
+              >
+                <svg className="w-3.5 h-3.5 text-violet-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Instalar App
+              </button>
+            )}
+
             <div className="hidden md:flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center text-white text-sm font-bold shadow-lg"
                 style={{ boxShadow: "0 0 15px rgba(139,92,246,0.4)" }}>
@@ -95,7 +113,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden transition-all duration-300 overflow-hidden ${menuOpen ? "max-h-72 pb-4" : "max-h-0"}`}>
+        <div className={`md:hidden transition-all duration-300 overflow-hidden ${menuOpen ? "max-h-96 pb-4" : "max-h-0"}`}>
           <div className="glass rounded-2xl p-2 mt-2 space-y-1">
             {links.map((link) => {
               const active = isActive(link.path);
@@ -107,6 +125,20 @@ const Navbar = () => {
                 </button>
               );
             })}
+
+            {/* Instalar App no Mobile Menu */}
+            {showInstallButton && (
+              <button
+                onClick={() => { promptInstall(); setMenuOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-left text-violet-300 bg-violet-600/15 border border-violet-500/30 hover:bg-violet-600/30 transition-all"
+              >
+                <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Instalar no Dispositivo
+              </button>
+            )}
+
             <button onClick={handleSair}
               className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

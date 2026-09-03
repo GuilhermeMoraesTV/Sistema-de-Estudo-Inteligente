@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { calcularEstatisticas } from "../services/firebaseService";
 import Navbar from "../components/Navbar";
+import PwaInstallBanner from "../components/PwaInstallBanner";
 
 interface Estatisticas {
   totalMateriais: number;
@@ -160,6 +161,9 @@ const Dashboard = () => {
           </h1>
           <p className="mt-2 text-muted-foreground">Pronto para mais um dia de estudos?</p>
         </div>
+
+        {/* PWA Install Banner (visível apenas se não instalado neste aparelho) */}
+        <PwaInstallBanner />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
